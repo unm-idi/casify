@@ -51,10 +51,13 @@ Rails.application.routes.draw do
   get '/auth/:provider/callback', to: 'application#auth_callback'
 ```
 
-If you wish to skip authentication for any routes, simply skip the before action that authenticates the user
+If you wish to skip authentication for any routes, simply skip the before action that authenticates the user for that specific route in that specific controller
 
 ```ruby
-skip_before_action :auth_user, only: :unauthed_route
+class SomeController< ApplicationController
+  skip_before_action :auth_user, only: :unauthed_route
+
+  # Here is the rest of your controller...
 ```
 
 

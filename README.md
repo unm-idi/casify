@@ -1,34 +1,63 @@
 # Casify
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/casify`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'casify'
+gem 'casify', git: 'git@github.com:unm-idi/casify.git'
 ```
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
-
-    $ gem install casify
 
 ## Usage
 
-TODO: Write usage instructions here
+Casify is intended to provide a single sign on (SSO) authentication/authorization solution for client applications developed by [UNM IDI](http://idi.unm.edu).
 
-## Development
+In order to communicate with a CAS server omniauth-cas is used. Right now, the setup of this gem must be done by the user. Setup is straightforward, and consists of creating an initializer in order to accomplish this. Consult the [OmniAuth Cas Github](https://github.com/dlindahl/omniauth-cas) page for examples of options that can be used.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+In order to limit the amount of traffic sent between client applications and the described CAS server, an authentication timeout can be set. The authentication timeout describes how long before the application will check the user's CAS ticket with the described CAS server. As long as the CAS ticket is still valid, this process will be transparent to the user.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Initializing the Casify gem can be done by creating an initializer at `/config/initializers/casify.rb`. An example initialization using a 3 minute timeout is shown in the block below.
+
+```ruby
+Casify.configure(
+  auth_exp: 180
+)
+```
+
+The default timeout is set to 3 seconds. This will ensure that the CAS ticket is checked with every user request. No persistent data store is assumed, and user information is stored in the session cookie. Rails will encrypt this cookie by default, and the user will not be able to view or augment any information it contains. However, if the expiration time is extended it is **HIGHLY** recommended that communication between the client application and the user be encrypted (HTTPS, TLS). This ensures that the cookie can not be hijacked and used by an attacker to masquerade as a logged in user.
+
+In order to authenticate/authenticate users, two things need to be done. First, add the following line of code to your Application Controller, this will add the proper before actions.
+
+```ruby
+class ApplicationController < ActionController::Base
+  include Casify::AuthController
+
+  # The rest of your controller goes here...
+```
+
+Then, in your routes add this line to set up the CAS callback route. For more info on the callback url start [here](https://github.com/dlindahl/omniauth-cas).
+
+```ruby
+Rails.application.routes.draw do
+  # Here are your routes...
+
+  # Put this in for Casify
+  get '/auth/:provider/callback', to: 'application#auth_callback'
+```
+
+If you wish to skip authentication for any routes, simply skip the before action that authenticates the user
+
+```ruby
+skip_before_action :auth_user, only: :unauthed_route
+```
+
+
 
 ## Contributing
 
@@ -38,4 +67,3 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/[USERN
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-

@@ -1,7 +1,4 @@
 module Casify::AuthController
-  AUTHZ_URL = ENV['authz_url'].to_s
-  AUTH_N_EXP = (ENV['auth_n_exp'] || 3).to_i.seconds
-  AUTH_Z_EXP = (ENV['auth_z_exp'] || 180).to_i.seconds
 
   extend ActiveSupport::Concern
 
@@ -14,7 +11,7 @@ module Casify::AuthController
   def auth_callback
     session['user'] = cas_auth_hash
     session['user']['roles'] = get_user_roles
-    session['authn_expiration'] = Time.now + AUTH_N_EXP
+    session['authn_expiration'] = Time.now + Casify.authn_exp
     redirect_to session['request_uri']
   end
 
@@ -37,8 +34,8 @@ module Casify::AuthController
 
   def get_user_roles
     if session['user']['roles'].nil? || !auth_z_fresh?
-      HTTParty.get(AUTHZ_URL, query: {username: session['user']['username']})['roles']
-      session['authz_expiration'] = Time.now + AUTH_Z_EXP
+      HTTParty.get(Casify.authz_url, query: {username: session['user']['username']})['roles']
+      session['authz_expiration'] = Time.now + Casify.authz_exp
     else
       session['user']['roles']
     end

@@ -65,6 +65,10 @@ class SomeController< ApplicationController
 
 A `@current_user` instance variable is set to allow you to access the attributes sent from the CAS server.
 
+The `@current_user` allows for authentication by using the 'has_role?', `resources_by_roles`, and `roles_by_resource` methods. These methods are highly influenced by [rolify](https://github.com/RolifyCommunity/rolify).
+
+The `has_role?` method accepts a role/resource pair, and returns true or false, based on whether the pair exists for the user. The `resources_by_roles` method will accept a resource, and return all roles that a user has against it. The `roles_by_resource` method will accept a role, and give back all of the resources that a user has that role against. 
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/casify. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.

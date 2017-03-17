@@ -49,6 +49,7 @@ Rails.application.routes.draw do
 
   # Put this in for Casify
   get '/auth/:provider/callback', to: 'application#auth_callback'
+end
 ```
 
 If you wish to skip authentication for any routes, simply skip the before action that authenticates the user for that specific route in that specific controller
@@ -60,7 +61,9 @@ class SomeController< ApplicationController
   # Here is the rest of your controller...
 ```
 
+### Authorization
 
+A `@current_user` instance variable is set to allow you to access the attributes sent from the CAS server.
 
 ## Contributing
 

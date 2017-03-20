@@ -10,7 +10,7 @@ module Casify::AuthController
 
   def auth_callback
     session['user'] = cas_auth_hash
-    session['auth_expiration'] = Time.now + Casify.auth_exp
+    session['auth_expiration'] = Time.now + Casify.configuration.auth_exp
     redirect_to session['request_uri']
   end
 

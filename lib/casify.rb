@@ -5,14 +5,19 @@ require "casify/auth_controller"
 require "casify/user"
 module Casify
 
-  def self.configure(values={})
-    str_config = values.map{|k,v| {k.downcase.to_s => v}}.reduce(&:merge)
-
-    @@auth_exp = (str_config['auth_exp'] || 3).to_i.seconds
+  class Configuration
+    attr_accessor :auth_exp
   end
 
-  def self.auth_exp
-    @@auth_exp
+  class << self
+
+    attr_accessor :configuration
+
+    def configure
+      self.configuration ||= Configuration.new
+      yield(configuration) if block_given?
+    end
+
   end
 
 end

@@ -25,9 +25,9 @@ In order to limit the amount of traffic sent between client applications and the
 Initializing the Casify gem can be done by creating an initializer at `/config/initializers/casify.rb`. An example initialization using a 3 minute timeout is shown in the block below.
 
 ```ruby
-Casify.configure(
-  auth_exp: 180
-)
+Casify.configure do |config|
+  config.auth_exp = 180
+end
 ```
 
 The default timeout is set to 3 seconds. This will ensure that the CAS ticket is checked with every user request. No persistent data store is assumed, and user information is stored in the session cookie. Rails will encrypt this cookie by default, and the user will not be able to view or augment any information it contains. However, if the expiration time is extended it is **HIGHLY** recommended that communication between the client application and the user be encrypted (HTTPS, TLS). This ensures that the cookie can not be hijacked and used by an attacker to masquerade as a logged in user.
@@ -67,7 +67,7 @@ A `@current_user` instance variable is set to allow you to access the attributes
 
 The `@current_user` allows for authentication by using the 'has_role?', `resources_by_roles`, and `roles_by_resource` methods. These methods are highly influenced by [rolify](https://github.com/RolifyCommunity/rolify).
 
-The `has_role?` method accepts a role/resource pair, and returns true or false, based on whether the pair exists for the user. The `resources_by_roles` method will accept a resource, and return all roles that a user has against it. The `roles_by_resource` method will accept a role, and give back all of the resources that a user has that role against. 
+The `has_role?` method accepts a role/resource pair, and returns true or false, based on whether the pair exists for the user. The `resources_by_roles` method will accept a resource, and return all roles that a user has against it. The `roles_by_resource` method will accept a role, and give back all of the resources that a user has that role against.
 
 ## Contributing
 

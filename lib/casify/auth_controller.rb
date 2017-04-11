@@ -10,7 +10,8 @@ module Casify::AuthController
 
   def auth_callback
     session['user'] = cas_auth_hash
-    session['auth_expiration'] = Time.now + Casify.configuration.auth_exp
+    session['auth_expiration'] = Time.now + 1.hours
+    session['hard_auth_exp'] ||= Time.now + 8.hours
     redirect_to session['request_uri']
   end
 
@@ -21,9 +22,12 @@ module Casify::AuthController
   end
 
   def auth_user
+
     unless auth_n_fresh?
+      session['hard_auth_exp'] = nil
       redirect_to '/auth/cas'
     end
+    session['auth_expiration'] = Time.now + 1.hours
   end
 
   def cas_auth_hash
@@ -42,14 +46,9 @@ module Casify::AuthController
   end
 
   def auth_n_fresh?
-    check_freshness session['auth_expiration']
+    session['auth_expiration'] ||= Time.now - 1.hours
+    session['hard_auth_exp'] ||= Time.now - 8.hours
+    Time.now < session['auth_expiration'].to_time && Time.now < session['hard_auth_exp'].to_time
   end
 
-  def check_freshness(exp_time)
-    if (exp = exp_time.to_s.to_time)
-      Time.now < exp
-    else
-      false
-    end
-  end
 end

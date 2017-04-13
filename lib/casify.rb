@@ -6,7 +6,7 @@ require "casify/user"
 module Casify
 
   class Configuration
-    attr_accessor :auth_exp
+    attr_accessor :cas_url
   end
 
   class << self

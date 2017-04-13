@@ -15,6 +15,11 @@ module Casify::AuthController
     redirect_to session['request_uri']
   end
 
+  def logout
+    reset_session
+    redirect_to "//#{Casify.configuration.cas_url}/logout"
+  end
+
   private
 
   def set_request_uri

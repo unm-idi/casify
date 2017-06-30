@@ -11,10 +11,16 @@
       end
     end
 
-    def has_role?(role, resource)
-      @roles.find do |a_role|
-        a_role['role'] == role.to_s && a_role['resource'] == resource
-      end.present?
+    def has_role?(role, resource=nil)
+      if resource.present?
+        @roles.find do |a_role|
+          a_role['role'] == role.to_s && a_role['resource'] == resource
+        end.present?
+      else
+        @roles.find do |a_role|
+          a_role['role'] == role.to_s && a_role['resource'].nil?
+        end.present?
+      end
     end
 
     def resources_by_roles(role)

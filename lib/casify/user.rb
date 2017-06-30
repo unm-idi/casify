@@ -7,7 +7,7 @@
       if hsh.kind_of? Hash
         @username = hsh['username']
         @email = hsh['extra_attributes']['email']
-        @roles = set_roles(hsh)['roles']
+        @roles = set_roles(hsh)
       end
     end
 

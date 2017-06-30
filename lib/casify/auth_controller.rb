@@ -39,11 +39,10 @@ module Casify::AuthController
     creds = Marshal.load Marshal.dump(request.env['omniauth.auth'])
     {
       'username' => creds['uid'],
-      'roles' => JSON.parse(creds['extra']['user_roles']),
       'extra_attributes' => {
         'email' => creds['info']['email']
       }
-    }
+    }.merge(Marshal.load Marshal.dump(JSON.parse(creds['extra']['user_roles'])))
   end
 
   def set_current_user
